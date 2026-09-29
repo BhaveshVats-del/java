@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JavaScript from Zero — an interactive one-page course</title>
+<style>
+  *{box-sizing:border-box}
+  :root{
+    --bg:#f6f8fb; --card:#fff; --ink:#0f172a; --muted:#526074; --line:#e3e8ef;
+    --blue:#2563eb; --amber:#f59e0b; --code-bg:#0f172a; --code-ink:#e2e8f0;
+  }
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--blue)}
+  .wrap{max-width:880px;margin:0 auto;padding:0 20px}
+  header.hero{background:linear-gradient(135deg,#0f172a,#1e3a8a 58%,#4c1d95);color:#fff;padding:44px 0 38px}
+  header.hero h1{margin:0 0 10px;font-size:clamp(26px,5vw,40px);letter-spacing:-.02em;line-height:1.1}
+  header.hero p{margin:0;color:#c7d2fe;max-width:66ch}
+  .pill{display:inline-block;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);
+    border-radius:999px;padding:3px 11px;font-size:12.5px;margin:14px 8px 0 0}
+  nav.sticky{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.93);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  nav.sticky .wrap{display:flex;gap:6px;overflow-x:auto;padding:10px 20px}
+  nav a{white-space:nowrap;font-size:13px;text-decoration:none;color:var(--muted);
+    padding:5px 11px;border-radius:999px;border:1px solid transparent}
+  nav a:hover{background:#eef2ff;color:var(--blue);border-color:#dbe4ff}
+  section{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:22px 26px;margin:22px 0;box-shadow:0 1px 2px rgba(15,23,42,.04);scroll-margin-top:70px}
+  section h2{margin:.1em 0 .35em;font-size:22px;letter-spacing:-.01em}
+  h3{font-size:16.5px;margin:20px 0 6px}
+  .badge{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--blue);background:#eef2ff;border:1px solid #dbe4ff;border-radius:999px;padding:3px 10px;margin-bottom:10px}
+  p{margin:.6em 0}
+  ul,ol{margin:.5em 0 .8em;padding-left:1.3em}
+  li{margin:.25em 0}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;font-size:.88em;
+    background:#eef2f7;border:1px solid #e2e8f0;border-radius:5px;padding:1px 5px;white-space:nowrap}
+  .codeblock{border:1px solid #1e293b;border-radius:11px;overflow:hidden;margin:14px 0;background:var(--code-bg)}
+  .codebar{background:#1e293b;color:#94a3b8;font:12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+    padding:9px 12px;letter-spacing:.04em}
+  pre.code{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;margin:0;overflow:auto;
+    font:13.5px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  span.k{color:#c084fc} span.s{color:#86efac} span.n{color:#fbbf24} span.c{color:#64748b;font-style:italic}
+
+  .ed{border:1px solid #1e293b;border-radius:11px;overflow:hidden;margin:16px 0;background:#0f172a}
+  .edbar{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#1e293b;padding:7px 10px}
+  .edname{color:#94a3b8;font:12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.04em}
+  .edbtns{display:flex;gap:6px}
+  .ed button{font:600 12.5px system-ui;border-radius:7px;border:1px solid #334155;background:#0f172a;
+    color:#cbd5e1;padding:5px 11px;cursor:pointer}
+  .ed button.run{background:var(--blue);border-color:var(--blue);color:#fff}
+  .ed button:hover{filter:brightness(1.15)}
+  .ed textarea{width:100%;border:0;background:#0f172a;color:#e2e8f0;padding:14px 16px;min-height:132px;
+    resize:vertical;outline:none;display:block;tab-size:2;
+    font:13.5px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .out{margin:0;background:#0b1324;color:#a7f3d0;border-top:1px solid #1e293b;padding:12px 16px;
+    white-space:pre-wrap;word-break:break-word;font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace}
+  .out.placeholder{color:#64748b}
+  .out.err{color:#fca5a5}
+  .turn{background:#fffbeb;border:1px solid #fde68a;border-left:5px solid var(--amber);border-radius:10px;
+    padding:12px 16px;margin:16px 0}
+  .turn h4{margin:0 0 4px;font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:#92400e}
+  .turn p{margin:.35em 0}
+  .note{background:#eff6ff;border:1px solid #bfdbfe;border-left:5px solid var(--blue);border-radius:10px;
+    padding:12px 16px;margin:16px 0;font-size:15px}
+  .note p{margin:.35em 0}
+  .widget{border:1px dashed #c7d2fe;background:#f5f7ff;border-radius:12px;padding:16px 18px;margin:16px 0}
+  .widget button{font:600 14px system-ui;padding:7px 13px;border-radius:8px;border:1px solid var(--blue);
+    background:var(--blue);color:#fff;cursor:pointer;margin-right:6px}
+  .widget button.ghost{background:#fff;color:var(--blue)}
+  .widget input{font:14px system-ui;padding:7px 10px;border:1px solid var(--line);border-radius:8px;width:180px}
+  #count{font-size:26px;font-weight:700;margin:0 4px 0 10px;vertical-align:-2px}
+  #greetOut{font-weight:600;margin-top:10px}
+  table{width:100%;border-collapse:collapse;font-size:14.5px;margin:14px 0}
+  th,td{text-align:left;border-bottom:1px solid var(--line);padding:8px 9px;vertical-align:top}
+  th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+  details{margin:14px 0}
+  summary{cursor:pointer;font-weight:600;color:var(--blue)}
+  footer{color:var(--muted);font-size:14px;padding:26px 0 70px;text-align:center}
+  .kbd{font:600 11.5px ui-monospace;background:#fff;border:1px solid var(--line);border-bottom-width:2px;
+    border-radius:6px;padding:1px 6px}
+  @media (max-width:620px){
+    section{padding:18px 16px;border-radius:14px}
+    header.hero{padding:32px 0 28px}
+  }
+</style>
+</head>
+<body id="top">
+
+<header class="hero">
+  <div class="wrap">
+    <h1>JavaScript, from zero</h1>
+    <p>An interactive one-page course. Every example below is live — change the code, press
+       <strong>▶ Run</strong>, and watch what happens. Reading about code teaches you a little;
+       breaking code teaches you a lot.</p>
+    <span class="pill">16 lessons</span>
+    <span class="pill">No setup required</span>
+    <span class="pill">≈ 2 hours at a relaxed pace</span>
+    <span class="pill">No prior experience assumed</span>
+  </div>
+</header>
+
+<nav class="sticky">
+  <div class="wrap">
+    <a href="#l1">1 · Hello</a>
+    <a href="#l2">2 · Variables</a>
+    <a href="#l3">3 · Types</a>
+    <a href="#l4">4 · Strings</a>
+    <a href="#l5">5 · Numbers</a>
+    <a href="#l6">6 · Decisions</a>
+    <a href="#l7">7 · Arrays</a>
+    <a href="#l8">8 · Objects</a>
+    <a href="#l9">9 · Loops</a>
+    <a href="#l10">10 · Functions</a>
+    <a href="#l11">11 · Array power</a>
+    <a href="#l12">12 · Errors</a>
+    <a href="#l13">13 · The page</a>
+    <a href="#l14">14 · Project</a>
+    <a href="#l15">15 · Exercises</a>
+    <a href="#l16">16 · Cheat sheet</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ============ LESSON 1 ============ -->
+<section id="l1">
+  <span class="badge">Lesson 1</span>
+  <h2>What JavaScript is, and how to run it</h2>
+  <p>JavaScript is the language that makes web pages <em>do</em> things: react to clicks, validate forms,
+     fetch data, draw games. It runs inside every browser, and also on servers (via <strong>Node.js</strong>),
+     phones, and desktop apps. If you learn one language for the web, learn this one.</p>
+  <p>A program is just a list of instructions executed top to bottom. The most useful instruction while
+     learning is <code>console.log(...)</code> — it prints whatever you give it.</p>
+
+  <div class="demo" data-label="lesson-1.js">
+<script type="text/x-js">
+// Your very first JavaScript. Press ▶ Run.
+console.log("Hello, world!");
+console.log(2 + 3);
+console.log("JavaScript" + " " + "is running");
+</script>
+  </div>
+
+  <div class="turn">
+    <h4>Your turn</h4>
+    <p>Print your own name, then print your favourite number added to 10.</p>
+  </div>
+
+  <div class="note">
+    <p><strong>Where else can you run JS?</strong></p>
+    <p>1. <strong>This page</strong> — the Run buttons. 2. <strong>Any browser</strong> — press
+       <span class="kbd">F12</span> (or <span class="kbd">Cmd</span>+<span class="kbd">Opt</span>+<span class="kbd">J</span>
+       on Mac) to open the DevTools console and type code there. 3. <strong>Node.js</strong> — install it, then
+       <code>node file.js</code>.</p>
+    <p>Two rules for the editors here: <span class="kbd">Ctrl</span>/<span class="kbd">Cmd</span>+<span class="kbd">Enter</span>
+       runs the code, and avoid writing a loop that never ends (<code>while (true)</code>) — it would freeze the tab.</p>
+  </div>
+</section>
+
+<!-- ============ LESSON 2 ============ -->
+<section id="l2">
+  <span class="badge">Lesson 2</span>
+  <h2>Variables — naming your data</h2>
+  <p>A variable is a labelled box holding a value. You create one with <code>let</code> (reassignable) or
+     <code>const</code> (permanent). <code>var</code> is the ancient version — you'll see it in old code,
+     but don't write it.</p>
+  <ul>
+    <li><code>const</code> by default. Switch to <code>let</code> only when the value must change.</li>
+    <li>Names are case-sensitive, can't start with a digit, and shouldn't contain spaces — use
+        <code>camelCase</code> like <code>userAge</code>.</li>
+    <li><code>=</code> means "put this value in that box". It is not "equals" (that's <code>===</code>).</li>
+  </ul>
+
+  <div class="demo" data-label="lesson-2.js">
+<script type="text/x-js">
+const name = "Ada";      // can never be reassigned
+let score = 10;          // can change later
+
+score = score + 5;       // take score, add 5, store it back
+score += 5;              // shorthand for the line above
+
+console.log(name);
+console.log(score);
+console.log("Player " + name + " has " + score + " points");
+</script>
+  </div>
+
+  <div class="turn">
+    <h4>Your turn</h4>
+    <p>Create <code>let coffee = 0</code>. Add 1 to it twice, then print
+       <code>"I drank 2 cups"</code> using a template string (<code>`...${coffee}...`</code>).</p>
+  </div>
+</section>
+
+<!-- ============ LESSON 3 ============ -->
+<section id="l3">
+  <span class="badge">Lesson 3</span>
+  <h2>Data types — the shapes a value can take</h2>
+  <p>JavaScript values come in a handful of types. <code>typeof</code> tells you which one you're holding.</p>
+  <table>
+    <tr><th>Type</th><th>Example</th><th>Notes</th></tr>
+    <tr><td>number</td><td><code>42</code>, <code>3.14</code>, <code>-7</code></td><td>One type for integers and decimals</td></tr>
+    <tr><td>string</td><td><code>"hello"</code>, <code>'hi'</code>, <code>`hey`</code></td><td>Text, in quotes</td></tr>
+    <tr><td>boolean</td><td><code>true</code>, <code>false</code></td><td>Yes / no answers</td></tr>
+    <tr><td>undefined</td><td>a declared variable with no value</td><td>JavaScript's "nothing here yet"</td></tr>
+    <tr><td>null</td><td><code>null</code></td><td>You deliberately set "empty"</td></tr>
+    <tr><td>object</td><td><code>{ name: "Ada" }</code>, <code>[1, 2, 3]</code></td><td>Collections — lessons 7 and 8</td></tr>
+  </table>
+
+  <div class="demo" data-label="lesson-3.js">
+<script type="text/x-js">
+console.log(typeof 42);          // number
+console.log(typeof "42");        // string
+console.log(typeof true);        // boolean
+console.log(typeof undefined);   // undefined
+console.log(typeof null);        // "object"  <- a famous 1995 bug, kept forever
+console.log(typeof [1, 2, 3]);   // object  (arrays are a kind of object)
+
+let mystery;
+console.log(mystery);            // undefined
+
+// The genuinely useful check for arrays:
+console.log(Array.isArray([1, 2, 3]));
+</script>
+  </div>
+
+  <div class="turn">
+    <h4>Your turn</h4>
+    <p>Create five variables — one of each type — and print the <code>typeof</code> each one.</p>
+  </div>
+</section>
+
+<!-- ============ LESSON 4 ============ -->
+<section id="l4">
+  <span class="badge">Lesson 4</span>
+  <h2>Strings — working with text</h2>
+  <p>The backtick template string <code>`Hi ${name}`</code> is your best friend: it drops values straight into
+     text without messy <code>+</code> concatenation. Strings also come with built-in tools (methods).</p>
+
+  <div class="demo" data-label="lesson-4.js">
+<script type="text/x-js">
+const first = "Grace";
+const last = "Hopper";
+
+const full = `${first} ${last}`;        // template string
+console.log(full);
+console.log(`Length: ${full.length}`);  // 12
+
+console.log(full.toUpperCase());
+console.log(full.toLowerCase());
+console.log(full.includes("Hopper"));   // true
+console.log(full.startsWith("Gr"));     // true
+
+console.log(full.slice(0, 5));          // "Grace"  (start, end-exclusive)
+console.log(full.split(" "));           // ["Grace", "Hopper"]
+console.log("  padded  ".trim());       // "padded"
+console.log("a,b,c".split(","));        // ["a", "b", "c"]
+
+console.log(full[0]);                   // "G"  — like an array of characters
+</script>
+  </div>
+
+  <div class="turn">
+    <h4>Your turn</h4>
+    <p>Starting from <code>const name = "ada lovelace";</code>, print her initials in capitals as
+       <code>A.L.</code>. (Hint: <code>split(" ")</code>, take <code>[0]</code> of each word,
+       <code>toUpperCase()</code>.)</p>
+  </div>
+
+  <div class="demo" data-label="your-turn-solution.js" data-solution="sol-l4">
+<script type="text/x-js">
+const name = "ada lovelace";
+// your code here...
+</script>
+  </div>
+<script type="text/x-solution" id="sol-l4">
+const name = "ada lovelace";
+const parts = name.split(" ");
+const initials = parts[0][0].toUpperCase() + "." + parts[1][0].toUpperCase() + ".";
+console.log(initials);   // A.L.
+</script>
+</section>
+
+<!-- ============ LESSON 5 ============ -->
+<section id="l5">
+  <span class="badge">Lesson 5</span>
+  <h2>Numbers and Math</h2>
+  <p>Arithmetic works as you'd expect, with two extras: <code>%</code> (remainder) and <code>**</code> (power).
+     The <code>Math</code> object adds rounding, randomness and more.</p>
+
+  <div class="demo" data-label="lesson-5.js">
+<script type="text/x-js">
+console.log(7 + 3, 7 - 3, 7 * 3, 7 / 3);
+console.log(7 % 3);        // 1  — remainder (great for "is it even?")
+console.log(2 ** 10);      // 1024
+
+console.log(0.1 + 0.2);    // 0.30000000000000004 — floats, not a bug you caused
+
+console.log(Math.round(4.6));   // 5
+console.log(Math.floor(4.9));   // 4  — always down
+console.log(Math.ceil(4.1));    // 5  — always up
+console.log(Math.max(3, 9, 4)); // 9
+console.log(Math.abs(-7));      // 7
+
+console.log(Number("42") + 1);  // 43 — string turned into number
+console.log(parseInt("42px"));  // 42 — reads the number at the start
+
+// A random whole number from 1 to 6 (a dice roll):
+const roll = Math.floor(Math.random() * 6) + 1;
+console.log("You rolled", roll);
+</script>
+  </div>
+
+  <div class="turn">
+    <h4>Your turn</h4>
+    <p>Celsius to Fahrenheit: <code>F = C × 9/5 + 32</code>. Convert <code>const c = 37;</code> and print the
+       rounded result.</p>
+  </div>
+</section>
+
+<!-- ============ LESSON 6 ============ -->
+<section id="l6">
+  <span class="badge">Lesson 6</span>
+  <h2>Booleans and decisions</h2>
+  <p><code>if</code> runs code only when a condition is true. Comparisons produce booleans.</p>
+  <ul>
+    <li>Use <code>===</code> and <code>!==</code> (strict) — never <code>==</code> / <code>!=</code>, which do weird type coercion.</li>
+    <li><code>&amp;&amp;</code> = "and", <code>||</code> = "or", <code>!</code> = "not".</li>
+    <li>The ternary <code>cond ? a : b</code> is a one-line <code>if/else</code> that produces a value.</li>
+  </ul>
+
+  <div class="demo" data-label="lesson-6.js">
+<script type="text/x-js">
+const age = 20;
+
+if (age >= 18) {
+  console.log("You can vote.");
+} else {
+  console.log("Too young.");
+}
+
+// else-if chains pick exactly one branch
+const score = 82;
+if (score >= 90)      console.log("Grade A");
+else if (score >= 75) console.log("Grade B");
+else if (score >= 50) console.log("Grade C");
+else                  console.log("Fail");
+
+// Ternary: choose a value, not a branch
+const label = age >= 18 ? "adult" : "minor";
+console.log(label);
+
+// Combining conditions
+const isTeen = age >= 13 && age <= 19;
+console.log("Teenager?", isTeen);
+console.log("Adult or teen?", isTeen || age >= 18);
+console.log("Not a teenager?", !isTeen);
+
+// === vs == (why strict matters)
+console.log(1 === "1");   // false — different types
+console.log(1 == "1");    // true  — == converts types. Surprising. Avoid it.
+</script>
+  </div>
+
+  <div class="turn">
+    <h4>Your turn</h4>
+    <p>With <code>const temp = 31;</code> print <code>"hot"</code> above 30, <code>"warm"</code> from 20–30, and
+       <code>"cold"</code> below 20.</p>
+  </div>
+</section>
+
+<!-- ============ LESSON 7 ============ -->
+<section id="l7">
+  <span class="badge">Lesson 7</span>
+  <h2>Arrays — ordered lists</h2>
+  <p>An array holds many values in order. Positions (indexes) start at <strong>0</strong>, not 1 — this trips up
+     everyone at first.</p>
+
+  <div class="demo" data-label="lesson-7.js">
+<script type="text/x-js">
+const fruit = ["🍎", "🍌", "🥭"];
+
+console.log(fruit[0]);        // 🍎  first item
+console.log(fruit.length);    // 3
+console.log(fruit[fruit.length - 1]);  // 🥭  last item
+
+fruit.push("🍇");             // add to the end
+console.log(fruit);
+
+const removed = fruit.pop();  // remove from the end
+console.log("Removed:", removed, "Left:", fruit);
+
+fruit.unshift("🍓");          // add to the start
+console.log(fruit);
+
+console.log(fruit.includes("🍌"));   // true
+console.log(fruit.indexOf("🥭"));    // 2  (or -1 if missing)
+console.log(fruit.join(" | "));      // glue into a string
+console.log(fruit.slice(1, 3));      // items 1 and 2 (end index excluded)
+</script>
+  </div>
+
+  <div class="turn">
+    <h4>Your turn</h4>
+    <p>Start with <code>const nums = [3, 1, 4];</code>. Push <code>1</code> and <code>5</code>, then print the
+       array, its length, and the sum of the first and last items.</p>
+  </div>
+</section>
+
+<!-- ============ LESSON 8 ============ -->
+<section id="l8">
+  <span class="badge">Lesson 8</span>
+  <h2>Objects — labelled collections</h2>
+  <p>Where an array is a list, an object is a <em>record</em>: named properties, each with a value. Real data
+     almost always looks like objects inside arrays.</p>
+
+  <div class="demo" data-label="lesson-8.js">
+<script type="text/x-js">
+const user = {
+  name: "Ada",
+  age: 36,
+  skills: ["math", "code"],
+  greet() {                       // a function stored on an object = a method
+    return `Hi, I'm ${this.name}`;
+  }
+};
+
+console.log(user.name);          // dot notation
+console.log(user["age"]);        // bracket notation (same thing)
+
+user.city = "London";            // add a new property
+user.age = 37;                   // change one
+console.log(user.greet());
+
+// Destructuring: pull properties into variables
+const { name, skills } = user;
+console.log(name, skills);
+
+// Spread: copy and override in one move
+const older = { ...user, age: 38 };
+console.log(older.age, user.age);   // 38 37 — the original is untouched
+
+console.log(Object.keys(user));     // property names as an array
+console.log(Object.values(user));   // values as an array
+</script>
+  </div>
+
+  <div class="turn">
+    <h4>Your turn</h4>
+    <p>Make a <code>movie</code> object with <code>title</code>, <code>year</code> and <code>rating</code>.
+       Print <code>Inception (2010) — 8.8/10</code> using a template string.</p>
+  </div>
+</section>
+
+<!-- ============ LESSON 9 ============ -->
+<section id="l9">
+  <span class="badge">Lesson 9</span>
+  <h2>Loops — doing things repeatedly</h2>
+  <p>Three shapes cover almost everything: counting loops, "for each item" loops, and while-learning loops.</p>
+
+  <div class="demo" data-label="lesson-9.js">
+<script type="text/x-js">
+// 1) Counting loop: start; keep going while; step
+for (let i = 1; i <= 5; i++) {
+  console.log("Lap " + i);
+}
+
+// 2) for...of : walk through the items of an array (read it as "for each")
+const cats = ["Milo", "Luna", "Oreo"];
+for (const cat of cats) {
+  console.log(`${cat} is a good cat`);
+}
+
+// 3) while: repeat until a condition turns false
+let fuel = 3;
+while (fuel > 0) {
+  console.log("Driving... fuel =", fuel);
+  fuel--;                    // forget this line and the loop never ends!
+}
+
+// break stops the loop early; continue skips to the next round
+for (let n = 1; n <= 10; n++) {
+  if (n === 4) continue;     // skip 4
+  if (n === 8) break;        // stop at 8
+  console.log(n);
+}
+
+// for...in walks the KEYS of an object
+const scores = { ada: 92, alan: 88 };
+for (const person in scores) {
+  console.log(person, "scored", scores[person]);
+}
+</script>
+  </div>
+
+  <div class="turn">
+    <h4>Your turn</h4>
+    <p>Add up every even number from 1 to 20 using a loop and an <code>if</code>. The answer is 110.</p>
+  </div>
+</section>
+
+<!-- ============ LESSON 10 ============ -->
+<section id="l10">
+  <span class="badge">Lesson 10</span>
+  <h2>Functions — packaging up logic</h2>
+  <p>A function takes inputs (parameters), does work, and gives back a result with <code>return</code>.
+     Writing one turns 10 lines into a name — that's the whole point.</p>
+  <ul>
+    <li>No <code>return</code> means the function gives back <code>undefined</code>.</li>
+    <li><code>return</code> also stops the function immediately.</li>
+    <li>Variables created inside a function live only inside it (that's <em>scope</em>).</li>
+    <li>Arrow functions <code>const add = (a, b) =&gt; a + b;</code> are the modern short form. If the body is
+        one expression, no braces and no <code>return</code> needed.</li>
+  </ul>
+
+  <div class="demo" data-label="lesson-10.js">
+<script type="text/x-js">
+function add(a, b) {
+  return a + b;
+}
+
+// Arrow function, block body
+const multiply = (a, b) => {
+  return a * b;
+};
+
+// Arrow function, one-expression body (implicit return)
+const square = n => n * n;
+
+// Default parameter: used when the argument is missing
+const greet = (name = "stranger") => `Hello, ${name}!`;
+
+console.log(add(2, 3));
+console.log(multiply(4, 5));
+console.log(square(9));
+console.log(greet());
+console.log(greet("Ada"));
+
+// Scope: outside is visible inside, but not the reverse
+const planet = "Earth";
+function describe() {
+  const local = "only in here";
+  return `${planet} says ${local}`;
+}
+console.log(describe());
+// console.log(local);  // would crash: local is not defined out here
+</script>
+  </div>
+
+  <div class="turn">
+    <h4>Your turn</h4>
+    <p>Write <code>isEven(n)</code> that returns <code>true</code>/<code>false</code>, then
+       <code>describe(n)</code> that returns <code>"7 is odd"</code> style text using <code>isEven</code>.</p>
+  </div>
+
+  <div class="demo" data-label="your-turn-solution.js" data-solution="sol-l10">
+<script type="text/x-js">
+// your code here...
+</script>
+  </div>
+<script type="text/x-solution" id="sol-l10">
+const isEven = n => n % 2 === 0;
+const describe = n => `${n} is ${isEven(n) ? "even" : "odd"}`;
+
+console.log(describe(7));
+console.log(describe(10));
+</script>
+</section>
+
+<!-- ============ LESSON 11 ============ -->
+<section id="l11">
+  <span class="badge">Lesson 11</span>
+  <h2>Array superpowers: map, filter, reduce</h2>
+  <p>Loops over arrays are so common that JavaScript gives you three tools that replace most of them. Each takes
+     a function as an argument (a <em>callback</em>) and runs it for every item.</p>
+  <table>
+    <tr><th>Method</th><th>What it does</th><th>Result length</th></tr>
+    <tr><td><code>map</code></td><td>Transforms every item</td><td>Same length</td></tr>
+    <tr><td><code>filter</code></td><td>Keeps only items that pass a test</td><td>Shorter or equal</td></tr>
+    <tr><td><code>reduce</code></td><td>Folds everything into one value</td><td>1 value</td></tr>
+  </table>
+
+  <div class="demo" data-label="lesson-11.js">
+<script type="text/x-js">
+const prices = [120, 40, 300, 75];
+
+const withTax = prices.map(p => Math.round(p * 1.18));
+const cheap    = prices.filter(p => p < 100);
+const total    = prices.reduce((sum, p) => sum + p, 0);
+
+console.log("with tax:", withTax);
+console.log("under 100:", cheap);
+console.log("total:", total);
+
+// The originals are never modified
+console.log("original:", prices);
+
+// A few more finders
+console.log(prices.find(p => p > 100));    // first match: 120
+console.log(prices.some(p => p > 250));    // true  — at least one
+console.log(prices.every(p => p > 0));     // true  — all of them
+
+// Sorting: [...prices] copies first, because sort() mutates
+console.log([...prices].sort((a, b) => a - b));   // small -> large
+console.log([...prices].sort((a, b) => b - a));   // large -> small
+
+// Chaining: each step feeds the next
+const names = ["ada", "alan", "grace", "bob"];
+const shoutyShortNames = names
+  .filter(n => n.length <= 4)
+  .map(n => n.toUpperCase())
+  .join(" & ");
+console.log(shoutyShortNames);
+</script>
+  </div>
+
+  <div class="turn">
+    <h4>Your turn</h4>
+    <p>From <code>const words = ["pear", "kiwi", "fig", "banana"];</code> print a new array containing only the
+       words longer than 3 letters, uppercased. Expected: <code>["PEAR", "KIWI", "BANANA"]</code>.</p>
+  </div>
+</section>
+
+<!-- ============ LESSON 12 ============ -->
+<section id="l12">
+  <span class="badge">Lesson 12</span>
+  <h2>Errors and debugging</h2>
+  <p>Errors are information, not failure. The trick is learning to read them.</p>
+  <ul>
+    <li><strong>ReferenceError</strong> — you used a name that doesn't exist. Almost always a typo or a variable used
+        before it's created.</li>
+    <li><strong>TypeError</strong> — you asked a value to do something it can't, like <code>undefined.name</code>.</li>
+    <li><strong>SyntaxError</strong> — the code didn't even parse. Usually a missing <code>)</code>, <code>}</code>,
+        or quote.</li>
+  </ul>
+  <p>When something misbehaves: log the value right before the crash, and <em>read the message from the end
+     backwards</em> — it usually names the exact problem.</p>
+
+  <div class="demo" data-label="lesson-12.js">
+<script type="text/x-js">
+// try/catch: stop a crash from killing the whole program
+function safeDivide(a, b) {
+  if (b === 0) throw new Error("cannot divide by zero");
+  return a / b;
+}
+
+try {
+  console.log(safeDivide(10, 2));
+  console.log(safeDivide(5, 0));   // throws...
+} catch (err) {
+  console.log("Caught:", err.message);
+}
+
+// Now demonstrate a crash being handled the same way
+try {
+  const nothing = null;
+  console.log(nothing.name);       // TypeError: Cannot read properties of null
+} catch (err) {
+  console.log(err.name + ": " + err.message);
+}
+
+console.log("The program keeps running. 🎉");
+</script>
+  </div>
+
+  <div class="note">
+    <p><strong>Debugging habit:</strong> add <code>console.log("here", someValue)</code> and run again. Confirm
+       what you <em>believe</em> is true. Half of all debugging is discovering your assumption was wrong.</p>
+  </div>
+</section>
+
+<!-- ============ LESSON 13 ============ -->
+<section id="l13">
+  <span class="badge">Lesson 13</span>
+  <h2>Making a page react (the DOM)</h2>
+  <p>The browser builds your HTML into a live tree called the <strong>DOM</strong>. JavaScript can find any
+     element with <code>document.querySelector()</code>, change it, and listen for events. This is the moment
+     JavaScript stops being a calculator and starts being a web page.</p>
+  <p>If the HTML contains <code>&lt;button id="plus"&gt;+1&lt;/button&gt;</code> and
+     <code>&lt;span id="count"&gt;0&lt;/span&gt;</code>, then this JavaScript makes them work together:</p>
+
+  <div class="codeblock" data-label="counter.js">
+<script type="text/x-js">
+const btn = document.querySelector("#plusBtn");  // find the button
+const label = document.querySelector("#count");  // find the number
+let n = 0;
+
+btn.addEventListener("click", () => {   // run this whenever the button is clicked
+  n = n + 1;                            // update our data
+  label.textContent = n;                // then update the page to match
+});
+</script>
+  </div>
+
+  <p>That exact code is running on this page. Try it:</p>
+
+  <div class="widget">
+    <button id="plusBtn">+1</button>
+    <button id="minusBtn" class="ghost">−1</button>
+    <button id="resetBtn" class="ghost">reset</button>
+    <span id="count">0</span>
+
+    <hr style="border:0;border-top:1px solid #dbe4ff;margin:14px 0">
+
+    <input id="nameInput" placeholder="Type your name" value="">
+    <button id="greetBtn">Greet me</button>
+    <div id="greetOut">👋 Hello, stranger!</div>
+  </div>
+
+  <p>Reading an input and writing a result works the same way:</p>
+
+  <div class="codeblock" data-label="greeting.js">
+<script type="text/x-js">
+const input = document.querySelector("#nameInput");
+const output = document.querySelector("#greetOut");
+
+document.querySelector("#greetBtn").addEventListener("click", () => {
+  const name = input.value.trim();          // .value reads what was typed
+  output.textContent = name
+    ? `👋 Hello, ${name}!`                  // textContent writes into the page
+    : "Type a name first 🙂";
+});
+</script>
+  </div>
+
+  <div class="turn">
+    <h4>Try it for real</h4>
+    <p>Copy any of the code blocks from lessons 1–12 into the DevTools console of a page you're on and watch them
+       run live. Then try this: in the console, type
+       <code>document.querySelector("h1").textContent = "I did that"</code>.</p>
+  </div>
+</section>
+
+<!-- ============ LESSON 14 ============ -->
+<section id="l14">
+  <span class="badge">Lesson 14</span>
+  <h2>Mini project: a shopping-cart receipt</h2>
+  <p>Everything from lessons 7–11, combined. Objects in an array, a filter, a map, a reduce, and a formatted
+     report. This is what real front-end code feels like.</p>
+
+  <div class="demo" data-label="receipt.js">
+<script type="text/x-js">
+const cart = [
+  { item: "Keyboard", price: 2400, qty: 1 },
+  { item: "Mouse",    price: 900,  qty: 2 },
+  { item: "Cable",    price: 150,  qty: 3 },
+  { item: "Monitor",  price: 12000, qty: 1 }
+];
+
+// 1) Line totals with map
+const lines = cart.map(entry => ({
+  ...entry,
+  total: entry.price * entry.qty
+}));
+
+// 2) Filter out the cheap stuff (just to show it off)
+const bigLines = lines.filter(line => line.total > 500);
+
+// 3) Grand total with reduce
+const subtotal = lines.reduce((sum, line) => sum + line.total, 0);
+const tax = Math.round(subtotal * 0.18);
+const grand = subtotal + tax;
+
+// 4) Print a receipt
+console.log("====== RECEIPT ======");
+for (const line of lines) {
+  const padded = line.item.padEnd(10, " ");
+  console.log(`${padded} ${line.qty} x ₹${line.price} = ₹${line.total}`);
+}
+console.log("---------------------");
+console.log("Items over ₹500:", bigLines.map(l => l.item).join(", "));
+console.log(`Subtotal : ₹${subtotal}`);
+console.log(`GST 18%  : ₹${tax}`);
+console.log(`TOTAL    : ₹${grand}`);
+</script>
+  </div>
+
+  <div class="turn">
+    <h4>Extend it</h4>
+    <p>Pick a challenge: (a) add a 10% discount when the subtotal is over ₹10000,
+       (b) print the most expensive item using <code>reduce</code>, (c) split the receipt into two lists —
+       "cheap" and "expensive" — using <code>filter</code>.</p>
+  </div>
+</section>
+
+<!-- ============ LESSON 15 ============ -->
+<section id="l15">
+  <span class="badge">Lesson 15</span>
+  <h2>Exercises</h2>
+  <p>Attempt each one before peeking. The <em>💡 solution</em> button loads a worked answer into the editor —
+     run it, then edit it and see how it breaks.</p>
+
+  <h3>1. FizzBuzz</h3>
+  <p>Print 1 to 15. For multiples of 3 print <code>"Fizz"</code>, multiples of 5 print <code>"Buzz"</code>,
+     both print <code>"FizzBuzz"</code>.</p>
+  <div class="demo" data-label="ex1.js" data-solution="sol-e1">
+<script type="text/x-js">
+for (let i = 1; i <= 15; i++) {
+  // your code here...
+}
+</script>
+  </div>
+<script type="text/x-solution" id="sol-e1">
+for (let i = 1; i <= 15; i++) {
+  if (i % 3 === 0 && i % 5 === 0) console.log("FizzBuzz");
+  else if (i % 3 === 0) console.log("Fizz");
+  else if (i % 5 === 0) console.log("Buzz");
+  else console.log(i);
+}
+</script>
+
+  <h3>2. Reverse a string</h3>
+  <p>Write <code>reverse(str)</code> so <code>reverse("hello")</code> gives <code>"olleh"</code>.</p>
+  <div class="demo" data-label="ex2.js" data-solution="sol-e2">
+<script type="text/x-js">
+function reverse(str) {
+  // your code here...
+}
+
+console.log(reverse("hello"));
+</script>
+  </div>
+<script type="text/x-solution" id="sol-e2">
+function reverse(str) {
+  return str.split("").reverse().join("");
+}
+console.log(reverse("hello"));
+</script>
+
+  <h3>3. Count the vowels</h3>
+  <p>Count how many a, e, i, o, u appear in a sentence (case-insensitive).</p>
+  <div class="demo" data-label="ex3.js" data-solution="sol-e3">
+<script type="text/x-js">
+const sentence = "The quick brown fox jumps over the lazy dog";
+// your code here...
+</script>
+  </div>
+<script type="text/x-solution" id="sol-e3">
+const sentence = "The quick brown fox jumps over the lazy dog";
+const vowels = "aeiou";
+let count = 0;
+
+for (const ch of sentence.toLowerCase()) {
+  if (vowels.includes(ch)) count++;
+}
+console.log("Vowels:", count);
+</script>
+
+  <h3>4. Who passed?</h3>
+  <p>From the students below, print the names of those who scored 50 or more, and the class average.</p>
+  <div class="demo" data-label="ex4.js" data-solution="sol-e4">
+<script type="text/x-js">
+const students = [
+  { name: "Ada",     score: 92 },
+  { name: "Alan",    score: 47 },
+  { name: "Grace",   score: 78 },
+  { name: "Linus",   score: 33 },
+  { name: "Margaret", score: 61 }
+];
+// your code here...
+</script>
+  </div>
+<script type="text/x-solution" id="sol-e4">
+const students = [
+  { name: "Ada",     score: 92 },
+  { name: "Alan",    score: 47 },
+  { name: "Grace",   score: 78 },
+  { name: "Linus",   score: 33 },
+  { name: "Margaret", score: 61 }
+];
+
+const passed = students.filter(s => s.score >= 50).map(s => s.name);
+const average = students.reduce((sum, s) => sum + s.score, 0) / students.length;
+
+console.log("Passed:", passed.join(", "));
+console.log("Average:", average.toFixed(1));
+</script>
+
+  <h3>5. Temperature converter</h3>
+  <p>Write <code>toF(c)</code> and <code>toC(f)</code> that convert both ways and round to one decimal.</p>
+  <div class="demo" data-label="ex5.js" data-solution="sol-e5">
+<script type="text/x-js">
+// write toF and toC (they should round to one decimal)...
+// then un-comment these two lines:
+// console.log(toF(37));     // 98.6
+// console.log(toC(98.6));   // 37
+</script>
+  </div>
+<script type="text/x-solution" id="sol-e5">
+const round1 = n => Math.round(n * 10) / 10;
+
+const toF = c => round1(c * 9 / 5 + 32);
+const toC = f => round1((f - 32) * 5 / 9);
+
+console.log(toF(37));     // 98.6
+console.log(toC(98.6));   // 37
+</script>
+
+  <h3>6. Word frequency</h3>
+  <p>Count how many times each word appears in a sentence, and print each word with its count.</p>
+  <div class="demo" data-label="ex6.js" data-solution="sol-e6">
+<script type="text/x-js">
+const text = "the cat sat on the mat the cat slept";
+// your code here...
+</script>
+  </div>
+<script type="text/x-solution" id="sol-e6">
+const text = "the cat sat on the mat the cat slept";
+
+const counts = {};
+for (const word of text.split(" ")) {
+  counts[word] = (counts[word] || 0) + 1;
+}
+
+for (const word in counts) {
+  console.log(`${word}: ${counts[word]}`);
+}
+</script>
+</section>
+
+<!-- ============ LESSON 16 ============ -->
+<section id="l16">
+  <span class="badge">Lesson 16</span>
+  <h2>Cheat sheet</h2>
+  <p>Everything above, compressed. Come back here while you build things.</p>
+
+  <table>
+    <tr><th>Topic</th><th>Syntax</th></tr>
+    <tr><td>Print</td><td><code>console.log(value)</code></td></tr>
+    <tr><td>Constants / variables</td><td><code>const x = 1;</code> · <code>let y = 2;</code></td></tr>
+    <tr><td>Strings</td><td><code>`Hi ${name}`</code> · <code>.length</code> <code>.toUpperCase()</code> <code>.includes()</code> <code>.split()</code> <code>.trim()</code> <code>.slice(a,b)</code></td></tr>
+    <tr><td>Numbers</td><td><code>%</code> <code>**</code> · <code>Math.round/floor/ceil/random/max/abs</code> · <code>Number("42")</code></td></tr>
+    <tr><td>Compare</td><td><code>===</code> <code>!==</code> · <code>&lt;</code> <code>&gt;</code> <code>&lt;=</code> <code>&gt;=</code> · <code>&amp;&amp;</code> <code>||</code> <code>!</code></td></tr>
+    <tr><td>Decide</td><td><code>if / else if / else</code> · <code>cond ? a : b</code></td></tr>
+    <tr><td>Arrays</td><td><code>[1,2,3]</code> · <code>.push()</code> <code>.pop()</code> <code>.includes()</code> <code>.indexOf()</code> <code>.join()</code> <code>.slice()</code></td></tr>
+    <tr><td>Array power</td><td><code>.map(fn)</code> <code>.filter(fn)</code> <code>.reduce(fn, 0)</code> <code>.find(fn)</code> <code>.some(fn)</code> <code>.every(fn)</code> <code>.sort((a,b)=&gt;a-b)</code></td></tr>
+    <tr><td>Objects</td><td><code>{ key: value }</code> · <code>obj.key</code> · <code>const {a} = obj</code> · <code>{...obj, key: v}</code> · <code>Object.keys/values</code></td></tr>
+    <tr><td>Loops</td><td><code>for (let i=0; i&lt;n; i++)</code> · <code>for (const x of arr)</code> · <code>for (const k in obj)</code> · <code>while (cond)</code> · <code>break</code> <code>continue</code></td></tr>
+    <tr><td>Functions</td><td><code>function f(a, b) { return a + b }</code> · <code>const f = (a, b) =&gt; a + b;</code></td></tr>
+    <tr><td>Errors</td><td><code>try { ... } catch (err) { console.log(err.message) }</code> · <code>throw new Error("msg")</code></td></tr>
+    <tr><td>The page</td><td><code>document.querySelector("#id" / ".class")</code> · <code>.textContent</code> · <code>.value</code> · <code>.addEventListener("click", () =&gt; {})</code> · <code>.classList.toggle("x")</code></td></tr>
+  </table>
+
+  <h3>Where to go next</h3>
+  <ul>
+    <li><strong>Build something tiny this week:</strong> a tip calculator, a countdown, a to-do list, a quiz.
+        Struggling with a real idea teaches 10× faster than more lessons.</li>
+    <li><strong>MDN Web Docs</strong> (developer.mozilla.org) is the reference — search "mdn array map".</li>
+    <li><strong>javascript.info</strong> is the best free deep-dive course.</li>
+    <li>When you're comfortable: learn <strong>async/await</strong> and <code>fetch()</code> to pull real data
+        from an API, then a framework (React) if you're heading into front-end work.</li>
+  </ul>
+</section>
+
+<footer>
+  <p>You just wrote your first JavaScript. That was the hard part — the rest is practice.</p>
+  <p style="font-size:13px">Progress tip: revisit lessons 6–11 in a few days. Everything else builds on them.</p>
+</footer>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- tiny syntax highlighter ---------- */
+  var esc = function (s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  };
+  var RE = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*`)|\b(\d+(?:\.\d+)?)\b|\b(let|const|var|function|return|if|else|for|while|do|of|in|new|typeof|instanceof|null|undefined|true|false|class|extends|this|try|catch|finally|throw|switch|case|break|continue|default|delete|void|async|await|import|export|from|super|static)\b/g;
+
+  function hi(code) {
+    return esc(code).replace(RE, function (m, c, s, n, k) {
+      if (c) return '<span class="c">' + c + "</span>";
+      if (s) return '<span class="s">' + s + "</span>";
+      if (n) return '<span class="n">' + n + "</span>";
+      return '<span class="k">' + k + "</span>";
+    });
+  }
+
+  function tidy(s) {
+    return s.replace(/^[\s\n]+/, "").replace(/[\s\n]+$/, "");
+  }
+
+  /* ---------- value formatting for output ---------- */
+  function fmt(v) {
+    if (typeof v === "string") return v;
+    if (typeof v === "function") return "[function " + (v.name || "anonymous") + "]";
+    if (v === undefined) return "undefined";
+    if (v === null) return "null";
+    if (typeof v === "object") {
+      try { return JSON.stringify(v); } catch (e) { return String(v); }
+    }
+    return String(v);
+  }
+
+  /* ---------- static, read-only code blocks ---------- */
+  document.querySelectorAll(".codeblock").forEach(function (block) {
+    var src = block.querySelector('script[type="text/x-js"]');
+    if (!src) return;
+    var pre = document.createElement("pre");
+    pre.className = "code";
+    pre.innerHTML = hi(tidy(src.textContent));
+    block.appendChild(pre);
+  });
+
+  /* ---------- runnable editors ---------- */
+  function runEditor(ed) {
+    var ta = ed.querySelector("textarea");
+    var out = ed.querySelector(".out");
+    var code = ta.value;
+    out.className = "out";
+
+    if (/while\s*\(\s*(true|1)\s*\)|for\s*\(\s*;\s*;\s*\)/.test(code)) {
+      out.classList.add("err");
+      out.textContent = "⚠ That looks like a loop that never ends, so I did not run it. Make the condition eventually become false.";
+      return;
+    }
+
+    var logs = [];
+    var push = function (args) {
+      return Array.prototype.map.call(args, fmt).join(" ");
+    };
+    var fakeConsole = {
+      log:   function () { logs.push(push(arguments)); },
+      info:  function () { logs.push(push(arguments)); },
+      warn:  function () { logs.push("⚠ " + push(arguments)); },
+      error: function () { logs.push("✕ " + push(arguments)); },
+      table: function (v) { logs.push(fmt(v)); }
+    };
+
+    try {
+      var fn = new Function("console", code);
+      var result = fn(fakeConsole);
+      if (result !== undefined) logs.push("⇒ " + fmt(result));
+      if (logs.length) {
+        out.textContent = logs.join("\n");
+      } else {
+        out.classList.add("placeholder");
+        out.textContent = "✓ Ran fine, but nothing was printed. Use console.log(...) to show values.";
+      }
+    } catch (err) {
+      out.classList.add("err");
+      var msg = (err && err.message) ? err.message : String(err);
+      if (/Content Security Policy|unsafe-eval|eval\(\) is disabled|blocked/i.test(msg)) {
+        out.textContent = "⚠ This preview is blocking code execution.\nOpen the file in a normal browser tab (or use the live server link) and everything will run.";
+      } else {
+        out.textContent = "✕ " + err.name + ": " + msg + "\n(Open DevTools to see line numbers — Lesson 12.)";
+      }
+    }
+  }
+
+  document.querySelectorAll(".demo").forEach(function (block) {
+    var src = block.querySelector('script[type="text/x-js"]');
+    if (!src) return;
+    var original = tidy(src.textContent);
+    var label = block.getAttribute("data-label") || "script.js";
+    var solId = block.getAttribute("data-solution");
+    var solEl = solId ? document.getElementById(solId) : null;
+
+    var ed = document.createElement("div");
+    ed.className = "ed";
+
+    var bar = document.createElement("div");
+    bar.className = "edbar";
+
+    var name = document.createElement("span");
+    name.className = "edname";
+    name.textContent = label;
+
+    var btns = document.createElement("div");
+    btns.className = "edbtns";
+
+    var runBtn = document.createElement("button");
+    runBtn.className = "run";
+    runBtn.textContent = "▶ Run";
+
+    var resetBtn = document.createElement("button");
+    resetBtn.textContent = "↺ reset";
+
+    var solBtn = null;
+    if (solEl) {
+      solBtn = document.createElement("button");
+      solBtn.textContent = "💡 solution";
+    }
+
+    btns.appendChild(runBtn);
+    btns.appendChild(resetBtn);
+    if (solBtn) btns.appendChild(solBtn);
+    bar.appendChild(name);
+    bar.appendChild(btns);
+
+    var ta = document.createElement("textarea");
+    ta.value = original;
+    ta.spellcheck = false;
+    ta.setAttribute("aria-label", label);
+
+    var out = document.createElement("pre");
+    out.className = "out placeholder";
+    out.textContent = "Press ▶ Run to see the output";
+
+    ed.appendChild(bar);
+    ed.appendChild(ta);
+    ed.appendChild(out);
+    block.appendChild(ed);
+
+    runBtn.addEventListener("click", function () { runEditor(ed); });
+    resetBtn.addEventListener("click", function () {
+      ta.value = original;
+      out.className = "out placeholder";
+      out.textContent = "Reset. Press ▶ Run to see the output";
+    });
+    if (solBtn) {
+      solBtn.addEventListener("click", function () {
+        ta.value = tidy(solEl.textContent);
+        out.className = "out placeholder";
+        out.textContent = "Solution loaded — press ▶ Run, then tweak it.";
+      });
+    }
+    ta.addEventListener("keydown", function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        runEditor(ed);
+      }
+    });
+  });
+
+  /* ---------- the live DOM demo (lesson 13) ---------- */
+  var countEl = document.getElementById("count");
+  if (countEl) {
+    var n = 0;
+    var paint = function () { countEl.textContent = n; };
+    document.getElementById("plusBtn").addEventListener("click", function () { n++; paint(); });
+    document.getElementById("minusBtn").addEventListener("click", function () { n--; paint(); });
+    document.getElementById("resetBtn").addEventListener("click", function () { n = 0; paint(); });
+
+    var nameInput = document.getElementById("nameInput");
+    var greetOut = document.getElementById("greetOut");
+    document.getElementById("greetBtn").addEventListener("click", function () {
+      var name = nameInput.value.trim();
+      greetOut.textContent = name ? "👋 Hello, " + name + "!" : "Type a name first 🙂";
+    });
+    nameInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") document.getElementById("greetBtn").click();
+    });
+  }
+})();
+</script>
+</body>
+</html>
